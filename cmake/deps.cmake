@@ -305,8 +305,21 @@ macro(fvp_setup_deps)
   else()
   endif()
   _fvp_resolve_deps_archive("${MDK_SDK_PKG}" MDK_SDK_PKG)
+  # Android uses the mdk-sdk v0.40.1 release, pinned by its SHA-256, instead of
+  # the moving nightly. The nightly is downloaded once per plugin checkout and
+  # kept forever, so a checkout made on 2026-10-10 kept a build whose FFmpeg
+  # had no TLS ("https or dtls protocol not found"): every https:// stream
+  # failed on Android. FVP_DEPS_URL / FVP_DEPS_SHA256 / FVP_DEPS_ARCHIVE still
+  # override it.
+  set(FVP_PINNED_DEPS_URL "https://sourceforge.net/projects/mdk-sdk/files/nightly")
+  if(ANDROID AND "${MDK_SDK_PKG}" STREQUAL "mdk-sdk-android.7z"
+      AND "${FVP_DEPS_URL}" STREQUAL "" AND NOT "$ENV{FVP_DEPS_URL}" MATCHES "^http"
+      AND "${FVP_DEPS_SHA256}" STREQUAL "" AND "$ENV{FVP_DEPS_SHA256}" STREQUAL "")
+    set(FVP_PINNED_DEPS_URL "https://github.com/wang-bin/mdk-sdk/releases/download/v0.40.1")
+    set(FVP_DEPS_SHA256 "80079993f308bcd0afb5b34421e9f4034dcefb6d901d0f31e23b8508d694630f")
+  endif()
   _fvp_resolve_deps_options(
-    "https://sourceforge.net/projects/mdk-sdk/files/nightly"
+    "${FVP_PINNED_DEPS_URL}"
     FVP_DEPS_URL_EFFECTIVE
     FVP_DEPS_SHA256_EFFECTIVE
   )
