@@ -43,6 +43,14 @@ class FvpCreateCancelledException extends PlatformException {
 /// }
 /// ```
 class FvpCreateCancellation {
+  FvpCreateCancellation({this.playerProperties = const {}});
+
+  /// mdk properties of the player this creation opens, set before its media is
+  /// assigned (after the global `registerWith` player options, which they
+  /// override). Per player, unlike those options: e.g. `avio.http_proxy` for
+  /// the source of this stream.
+  final Map<String, String> playerProperties;
+
   final Completer<void> _cancelled = Completer<void>();
 
   bool get isCancelled => _cancelled.isCompleted;

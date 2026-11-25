@@ -363,6 +363,9 @@ class MdkVideoPlayerPlatform extends VideoPlayerPlatform {
     _playerOpts?.forEach((key, value) {
       player.setProperty(key, value);
     });
+    cancellation?.playerProperties.forEach((key, value) {
+      player.setProperty(key, value);
+    });
 
     if (_decoders != null) {
       player.videoDecoders = _decoders!;
